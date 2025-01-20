@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Patient Ticket</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .ticket {
+        width: 300px;
+        padding: 20px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .department {
+        font-size: 42px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .ticket-number {
+        font-size: 48px;
+        font-weight: bold;
+        margin: 15px 0;
+      }
+
+      .patient-name {
+        font-size: 24px;
+        margin: 20px 0;
+      }
+
+      .datetime-waiting {
+        font-size: 18px;
+        margin: 15px 0;
+      }
+
+      .barcode {
+        margin: 20px 0 10px 0;
+        width: 100%;
+        height: 80px;
+      }
+
+      .barcode-text {
+        font-family: monospace;
+        font-size: 16px;
+        margin: 5px 0 15px 0;
+      }
+
+      .complaint {
+        font-size: 18px;
+        margin: 15px 0;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ticket">
+      <div class="department">PMAH</div>
+      <div class="ticket-number">5TR</div>
+      <div class="patient-name">Mohammed Ahmed</div>
+      <div class="datetime-waiting">01/11/2016 08:48:27 Waiting 1</div>
+      <img
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+        alt="Barcode"
+        class="barcode"
+      />
+      <div class="barcode-text">201611010848272805</div>
+      <div class="complaint">Complain: Back Pain</div>
+    </div>
+  </body>
+</html>
