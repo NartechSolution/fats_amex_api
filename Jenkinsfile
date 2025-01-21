@@ -27,15 +27,11 @@ pipeline {
             }
         }
 
-        stage('Manage PM2 and Install Dependencies') {
+        stage('Install Dependencies and Fix Prisma Versions') {
             steps {
                 script {
-                    echo "Stopping PM2 process if running..."
-                    def processStatus = bat(script: 'pm2 list', returnStdout: true).trim()
-                    if (processStatus.contains('fatsAmexAPI')) {
-                        bat 'pm2 stop fatsAmexAPI || exit 0'
-                        bat 'pm2 delete fatsAmexAPI || exit 0'
-                    }
+                    echo "Ensuring Prisma versions match..."
+                    bat 'npm install prisma@latest @prisma/client@latest'
                 }
                 echo "Installing dependencies for fatsAmexAPI..."
                 script {
@@ -47,8 +43,21 @@ pipeline {
                 }
                 echo "Generating Prisma files..."
                 bat 'npx prisma generate'
-                echo "Restarting PM2 process..."
-                bat 'pm2 start server.js --name fatsAmexAPI'
+            }
+        }
+
+        stage('Restart PM2 Process') {
+            steps {
+                script {
+                    echo "Stopping PM2 process if running..."
+                    def processStatus = bat(script: 'pm2 list', returnStdout: true).trim()
+                    if (processStatus.contains('fatsAmexAPI')) {
+                        bat 'pm2 stop fatsAmexAPI || exit 0'
+                        bat 'pm2 delete fatsAmexAPI || exit 0'
+                    }
+                }
+                echo "Restarting PM2 process with the correct script path..."
+                bat 'pm2 start src/app.js --name fatsAmexAPI'
             }
         }
     }
