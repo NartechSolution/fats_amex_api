@@ -10,7 +10,7 @@ const DOMAIN = process.env.DOMAIN || "http://localhost:3000";
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "QMS",
+    title: "Fats Amex API",
     version: "1.0.0",
     description: "APIs Documentation",
     contact: {
