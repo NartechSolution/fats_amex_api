@@ -2,10 +2,11 @@ import dotenv from "dotenv";
 import path from "path";
 import swaggerJSDoc from "swagger-jsdoc";
 import { fileURLToPath } from "url";
+import config from "../config/config.js";
 
 dotenv.config();
 
-const DOMAIN = process.env.DOMAIN || "http://localhost:3000";
+const DOMAIN = config.DOMAIN || "http://localhost:3000";
 
 const swaggerDefinition = {
   openapi: "3.0.0",
