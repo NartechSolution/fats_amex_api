@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         ENV_FILE_PATH = "C:\\ProgramData\\Jenkins\\.jenkins\\jenkinsEnv\\fatsAmex"
+        HOME = "C:\\ProgramData\\Jenkins\\.jenkins"
     }
 
     stages {
@@ -37,11 +38,17 @@ pipeline {
                     }
                 }
                 echo "Installing dependencies for fatsAmexAPI..."
-                bat 'npm ci'
+                script {
+                    if (fileExists('package-lock.json')) {
+                        bat 'npm ci'
+                    } else {
+                        bat 'npm install'
+                    }
+                }
                 echo "Generating Prisma files..."
                 bat 'npx prisma generate'
                 echo "Restarting PM2 process..."
-                bat 'pm2 start server.js --name fats_Amex'
+                bat 'pm2 start server.js --name fatsAmexAPI'
             }
         }
     }
