@@ -14,10 +14,10 @@ class UserController {
         throw new MyError(error.details[0].message, 400);
       }
 
-      const { email, password, name, deptcode } = value;
+      const { email, password } = value;
 
       // Check if super admin exists in database
-      let user = await prisma.User.findFirst({
+      let user = await prisma.user.findFirst({
         where: { email },
       });
 
@@ -26,8 +26,7 @@ class UserController {
       }
 
       // Check if password is correct
-      const isPasswordCorrect = bcrypt.compare(password, user.password);
-      console.log(user.password);
+      const isPasswordCorrect = await bcrypt.compare(password, user.password);
       if (!isPasswordCorrect) {
         throw new MyError("Invalid password", 401);
       }
