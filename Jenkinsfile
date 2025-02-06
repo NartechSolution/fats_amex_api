@@ -27,22 +27,43 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies and Fix Prisma Versions') {
+        // stage('Install Dependencies and Fix Prisma Versions') {
+        //     steps {
+        //         script {
+        //             echo "Ensuring Prisma versions match..."
+        //             bat 'npm install prisma@latest @prisma/client@latest'
+        //         }
+        //         echo "Installing dependencies for fatsAmexAPI..."
+        //         script {
+        //             if (fileExists('package-lock.json')) {
+        //                 bat 'npm ci'
+        //             } else {
+        //                 bat 'npm install'
+        //             }
+        //         }
+        //         echo "Generating Prisma files..."
+        //         bat 'npx prisma generate'
+        //     }
+        // }
+
+        stage('Manage PM2 and Install Dependencies') {
             steps {
                 script {
-                    echo "Ensuring Prisma versions match..."
-                    bat 'npm install prisma@latest @prisma/client@latest'
-                }
-                echo "Installing dependencies for fatsAmexAPI..."
-                script {
-                    if (fileExists('package-lock.json')) {
-                        bat 'npm ci'
-                    } else {
-                        bat 'npm install'
+                    echo "Stopping PM2 process if running..."
+                    def processStatus = bat(script: 'pm2 list', returnStdout: true).trim()
+                    if (processStatus.contains('fatsAmexAPI') || processStatus.contains('fats-workers')) {
+                        // bat 'pm2 stop fatsAmexAPI fats-workers || exit 0'
+                        bat 'pm2 stop fatsAmexAPI || exit 0'
                     }
                 }
+                echo "Installing dependencies for fatsAmexAPI..."
+                bat 'npm ci'
                 echo "Generating Prisma files..."
                 bat 'npx prisma generate'
+                echo "Restarting PM2 process..."
+                bat 'pm2 restart fatsAmexAPI'
+                echo "Restarting PM2 process... Done"
+                bat 'pm2 save'
             }
         }
 
