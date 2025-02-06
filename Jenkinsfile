@@ -13,7 +13,7 @@ pipeline {
                     branches: [[name: '*/main']], 
                     extensions: [], 
                     userRemoteConfigs: [[
-                        credentialsId: 'dev_majid_new_github_credentials', 
+                        credentialsId: 'Wasim-Jenkins-Credentials', 
                         url: 'https://github.com/NartechSolution/fats_amex_api.git'
                     ]]
                 )
@@ -22,29 +22,10 @@ pipeline {
 
         stage('Setup Environment File') {
             steps {
-                echo "Copying environment file to the API project..."
+                echo "Copying environment file to the backend..."
                 bat "copy \"${ENV_FILE_PATH}\" \"%WORKSPACE%\\.env\""
             }
         }
-
-        // stage('Install Dependencies and Fix Prisma Versions') {
-        //     steps {
-        //         script {
-        //             echo "Ensuring Prisma versions match..."
-        //             bat 'npm install prisma@latest @prisma/client@latest'
-        //         }
-        //         echo "Installing dependencies for fatsAmexAPI..."
-        //         script {
-        //             if (fileExists('package-lock.json')) {
-        //                 bat 'npm ci'
-        //             } else {
-        //                 bat 'npm install'
-        //             }
-        //         }
-        //         echo "Generating Prisma files..."
-        //         bat 'npx prisma generate'
-        //     }
-        // }
 
         stage('Manage PM2 and Install Dependencies') {
             steps {
@@ -52,8 +33,7 @@ pipeline {
                     echo "Stopping PM2 process if running..."
                     def processStatus = bat(script: 'pm2 list', returnStdout: true).trim()
                     if (processStatus.contains('fatsAmexAPI') || processStatus.contains('fats-workers')) {
-                        // bat 'pm2 stop fatsAmexAPI fats-workers || exit 0'
-                        bat 'pm2 stop fatsAmexAPI || exit 0'
+                        bat 'pm2 stop fatsAmexAPI fats-workers || exit 0'
                     }
                 }
                 echo "Installing dependencies for fatsAmexAPI..."
@@ -64,21 +44,6 @@ pipeline {
                 bat 'pm2 restart fatsAmexAPI'
                 echo "Restarting PM2 process... Done"
                 bat 'pm2 save'
-            }
-        }
-
-        stage('Restart PM2 Process') {
-            steps {
-                script {
-                    echo "Stopping PM2 process if running..."
-                    def processStatus = bat(script: 'pm2 list', returnStdout: true).trim()
-                    if (processStatus.contains('fatsAmexAPI')) {
-                        bat 'pm2 stop fatsAmexAPI || exit 0'
-                        bat 'pm2 delete fatsAmexAPI || exit 0'
-                    }
-                }
-                echo "Restarting PM2 process with the correct script path..."
-                bat 'pm2 start src/app.js --name fatsAmexAPI'
             }
         }
     }
