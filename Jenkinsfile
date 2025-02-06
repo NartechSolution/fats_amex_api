@@ -37,9 +37,9 @@ pipeline {
                     }
                 }
                 echo "Installing dependencies for fatsAmexAPI..."
-                bat 'yarn install'
+                bat 'npm install'
                 echo "Generating Prisma files..."
-                bat 'yarn prisma generate'
+                bat 'npx prisma generate'
                 echo "Restarting PM2 process..."
                 bat 'pm2 restart fatsAmexAPI'
                 echo "Restarting PM2 process... Done"
