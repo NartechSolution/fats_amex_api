@@ -10,3 +10,6 @@ assets
 
 .env
 .codegpt
+
+# bat files
+*.bat
