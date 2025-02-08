@@ -271,14 +271,7 @@ class UserController {
           id: true,
           email: true,
           name: true,
-          deptcode: true,
           createdAt: true,
-          roles: true,
-          _count: {
-            select: {
-              patients: true,
-            },
-          },
         },
         skip,
         take: Number(limit),
@@ -357,7 +350,12 @@ class UserController {
   static async updateUser(req, res, next) {
     try {
       const { id } = req.params;
-      const { email, name, deptcode, password } = req.body;
+      const { error, value } = updateUserSchema.validate(req.body);
+      if (error) {
+        throw new MyError(error.details[0].message, 400);
+      }
+
+      const { email, name, password } = value;
 
       // Check if email is being changed and if it's already taken
       if (email) {
@@ -376,11 +374,7 @@ class UserController {
       }
 
       // Prepare update data
-      const updateData = {
-        email,
-        name,
-        deptcode,
-      };
+      const updateData = value;
 
       // If password is provided, hash it
       if (password) {
@@ -395,14 +389,6 @@ class UserController {
       const user = await prisma.user.update({
         where: { id },
         data: updateData,
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          deptcode: true,
-          createdAt: true,
-          roles: true,
-        },
       });
 
       res

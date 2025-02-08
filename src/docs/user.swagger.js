@@ -112,8 +112,6 @@
  *                 type: string
  *               name:
  *                 type: string
- *               deptcode:
- *                 type: string
  *     responses:
  *       201:
  *         description: User created successfully
@@ -202,8 +200,6 @@
  *                 type: string
  *               name:
  *                 type: string
- *               deptcode:
- *                 type: string
  *     responses:
  *       200:
  *         description: User updated successfully
@@ -254,8 +250,6 @@
  *                 type: string
  *                 minLength: 6
  *               name:
- *                 type: string
- *               deptcode:
  *                 type: string
  *     responses:
  *       201:
