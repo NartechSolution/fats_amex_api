@@ -28,6 +28,10 @@ app.use("/assets", express.static(path.join(__dirname, "../assets")));
 // API Routes
 app.use("/api/v1", routes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/test", (req, res) => {
+  res.json("success");
+});
+
 
 // Error Routes
 app.use(notFoundHandler);
