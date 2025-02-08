@@ -355,3 +355,61 @@
  *       419:
  *         description: Refresh token expired
  */
+
+/**
+ * @swagger
+ * /api/v1/user/update-role/{id}:
+ *   patch:
+ *     summary: Assign a role to a user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The user ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 enum: [fats, wbs, admin]
+ *                 description: The role to assign to the user
+ *             example:
+ *               role: "fats"
+ *     responses:
+ *       200:
+ *         description: Role assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Role assigned successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid role or validation error
+ *       401:
+ *         description: Unauthorized - Invalid or missing access token
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */

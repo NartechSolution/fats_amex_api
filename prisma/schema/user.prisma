@@ -3,9 +3,16 @@ model User {
   email             String?   @unique
   password          String?   
   name              String?   
+  role              String?   @default("fats")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
   refreshToken      RefreshToken[]
   roles             Role[]     @relation("UserRoles")
 }
+
+// enum UserRole {
+//     fats,
+//     wbs,
+//     both
+// }

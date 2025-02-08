@@ -1,5 +1,9 @@
 import bcrypt from "bcrypt";
-import { registerSchema, userSchema } from "../schemas/user.schema.js";
+import {
+  registerSchema,
+  updateUserSchema,
+  userSchema,
+} from "../schemas/user.schema.js";
 import MyError from "../utils/error.js";
 import JWT from "../utils/jwt.js";
 import prisma from "../utils/prismaClient.js";
@@ -19,6 +23,7 @@ class UserController {
       // Check if super admin exists in database
       let user = await prisma.User.findFirst({
         where: { email },
+        include: { roles: true },
       });
 
       if (!user) {
@@ -429,6 +434,37 @@ class UserController {
       } else {
         next(error);
       }
+    }
+  }
+
+  static async assignRole(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { error, value } = updateUserSchema.validate(req.body);
+      if (error) {
+        throw new MyError(error.details[0].message, 400);
+      }
+
+      const user = await prisma.$transaction(async (tx) => {
+        const user = await tx.user.findUnique({ where: { id } });
+
+        if (!user) {
+          throw new MyError("User not found", 404);
+        }
+
+        const updatedUser = await tx.user.update({
+          where: { id },
+          data: { ...value },
+        });
+
+        return updatedUser;
+      });
+
+      res
+        .status(200)
+        .json(response(200, true, "Role assigned successfully", user));
+    } catch (error) {
+      next(error);
     }
   }
 }

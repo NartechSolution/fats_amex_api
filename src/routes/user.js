@@ -16,4 +16,6 @@ router.get("/:id", verifyAccessToken, UserController.getUserById);
 router.put("/:id", verifyAccessToken, UserController.updateUser);
 router.delete("/:id", verifyAccessToken, UserController.deleteUser);
 
+router.patch("/update-role/:id", verifyAccessToken, UserController.assignRole);
+
 export default router;

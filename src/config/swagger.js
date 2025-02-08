@@ -44,6 +44,7 @@ const options = {
   swaggerDefinition: swaggerDefinition,
   apis: [
     path.join(__dirname, "../docs/user.swagger.js"),
+    path.join(__dirname, "../docs/role.swagger.js"),
     // add more paths...
   ],
 };
