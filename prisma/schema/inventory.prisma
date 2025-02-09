@@ -1,0 +1,21 @@
+model Inventory {
+  id                String    @id @default(uuid())
+  assetLocation     String?
+  mainCatCode       String?
+  mainCatDesc       String?
+  mainDesc          String?
+  subCatCode        String?
+  subCatDesc        String?
+  assetCategory     String?
+  image             String?
+  quantity          Int?       @default(1)
+  serial            String?
+  employeeId        String?
+  extNumber         String?
+  faNumber          String?
+  type              String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([assetLocation, mainCatCode, serial])
+}

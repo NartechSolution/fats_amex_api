@@ -45,6 +45,7 @@ const options = {
   apis: [
     path.join(__dirname, "../docs/user.swagger.js"),
     path.join(__dirname, "../docs/role.swagger.js"),
+    path.join(__dirname, "../docs/inventory.swagger.js"),
     // add more paths...
   ],
 };
