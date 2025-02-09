@@ -46,6 +46,7 @@ const options = {
     path.join(__dirname, "../docs/user.swagger.js"),
     path.join(__dirname, "../docs/role.swagger.js"),
     path.join(__dirname, "../docs/inventory.swagger.js"),
+    path.join(__dirname, "../docs/fatsCategory.swagger.js"),
     // add more paths...
   ],
 };
