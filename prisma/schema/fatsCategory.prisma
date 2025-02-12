@@ -5,7 +5,7 @@ model FatsCategory {
   mainDescription      String?
   subCategoryCode      String?
   subCategoryDesc      String?
-  counter              Int?      @default(autoincrement())
+  counter              Int      @default(autoincrement())
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
