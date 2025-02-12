@@ -9,8 +9,8 @@ const upload = uploadSingle({
   filename: "image",
 });
 
-const ensureUpload = (req, res, next) => {
-  ensureDir("uploads/inventory");
+const ensureUpload = async (req, res, next) => {
+  await ensureDir("uploads/inventory");
   next();
 };
 // router.use(verifyAccessToken);
