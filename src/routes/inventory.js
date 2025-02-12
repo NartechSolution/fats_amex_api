@@ -15,7 +15,7 @@ const ensureUpload = (req, res, next) => {
 };
 // router.use(verifyAccessToken);
 
-router.post("/", ensureUpload, InventoryController.create);
+router.post("/", ensureUpload, upload, InventoryController.create);
 router.get("/", InventoryController.getAll);
 router.get("/:id", InventoryController.getById);
 router.put("/:id", ensureUpload, upload, InventoryController.update);

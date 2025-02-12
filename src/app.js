@@ -3,6 +3,7 @@ import express from "express";
 import path, { dirname } from "path";
 import swaggerUi from "swagger-ui-express";
 import { fileURLToPath } from "url";
+import bodyParser from "body-parser";
 
 import config from "./config/config.js";
 import swaggerSpec from "./config/swagger.js";
@@ -20,6 +21,7 @@ dotenv.config();
 app.use(cors);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Statically serverd routes
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
@@ -31,7 +33,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/test", (req, res) => {
   res.json("success");
 });
-
 
 // Error Routes
 app.use(notFoundHandler);

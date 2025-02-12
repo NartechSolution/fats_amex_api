@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const inventoryTypes = ["Assset", "Consumable"];
+const inventoryTypes = ["Asset", "Consumable"];
 
 export const inventorySchema = Joi.object({
   assetLocation: Joi.string(),
