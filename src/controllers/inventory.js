@@ -132,7 +132,8 @@ class InventoryController {
       }
 
       if (req.file) {
-        value.image = req.file.path;
+        const imagePath = addDomain(req.file.path);
+        value.image = imagePath;
         if (inventory.image) {
           await deleteFile(inventory.image);
         }

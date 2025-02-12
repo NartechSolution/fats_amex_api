@@ -1,5 +1,5 @@
 import express from "express";
-import { uploadSingle } from "multermate-es";
+import { uploadSingle,ALLOWED_FILE_TYPES } from "multermate-es";
 import InventoryController from "../controllers/inventory.js";
 import { ensureDir } from "../utils/file.js";
 
