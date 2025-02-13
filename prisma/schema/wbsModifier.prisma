@@ -1,0 +1,16 @@
+model WbsModifier {
+    id          String   @id @default(uuid())
+    name        String?
+    description String?
+    price       Float?
+    stock       Int?
+    isActive    Boolean? @default(true)
+
+    // Many-to-Many relation with inventory
+    inventories WbsInventory[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("wbs_modifier")
+}

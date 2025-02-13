@@ -1,0 +1,25 @@
+model WbsInventory {
+    id              String    @id @default(uuid())
+    name            String?
+    description     String?
+    price           Float?
+    quantity        Int?
+    batchNumber     String?
+    serialNumber    String?
+    assetLocation   String?
+    expiryDate      DateTime?
+    manufactureDate DateTime?
+    image           String?
+
+    // Relations
+    category   WbsCategory @relation(fields: [categoryId], references: [id])
+    categoryId String
+
+    // Many-to-Many relation with WbsModifier
+    modifiers WbsModifier[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("wbs_inventory")
+}
