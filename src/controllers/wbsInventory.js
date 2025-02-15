@@ -3,6 +3,7 @@ import MyError from "../utils/error.js";
 import { addDomain, deleteFile } from "../utils/file.js";
 import prisma from "../utils/prismaClient.js";
 import response from "../utils/response.js";
+import ExcelJS from "exceljs";
 
 class WbsInventoryController {
   static async create(req, res, next) {
@@ -269,6 +270,143 @@ class WbsInventoryController {
       } else {
         next(error);
       }
+    }
+  }
+
+  static async exportExcel(req, res, next) {
+    try {
+      console.log("[Excel Export] Starting inventory export process");
+
+      // Fetch all inventories with relations
+      const inventories = await prisma.wbsInventory.findMany({
+        include: {
+          category: true,
+          modifiers: true,
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (inventories.length === 0) {
+        throw new MyError("No inventories found for export", 404);
+      }
+
+      // Create workbook and worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Inventories");
+
+      // Define columns
+      worksheet.columns = [
+        { header: "Name", key: "name", width: 30 },
+        { header: "Description", key: "description", width: 50 },
+        { header: "Price", key: "price", width: 15 },
+        { header: "Quantity", key: "quantity", width: 15 },
+        { header: "Batch Number", key: "batchNumber", width: 20 },
+        { header: "Serial Number", key: "serialNumber", width: 20 },
+        { header: "Asset Location", key: "assetLocation", width: 30 },
+        { header: "Category", key: "category", width: 20 },
+        { header: "Modifiers", key: "modifiers", width: 50 },
+        { header: "Expiry Date", key: "expiryDate", width: 20 },
+        { header: "Manufacture Date", key: "manufactureDate", width: 20 },
+        { header: "Created At", key: "createdAt", width: 20 },
+      ];
+
+      // Style header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFE0E0E0" },
+      };
+
+      // Add inventory data
+      inventories.forEach((inventory) => {
+        try {
+          const rowData = {
+            name: inventory?.name || "",
+            description: inventory?.description || "",
+            price: inventory?.price || 0,
+            quantity: inventory?.quantity || 0,
+            batchNumber: inventory?.batchNumber || "",
+            serialNumber: inventory?.serialNumber || "",
+            assetLocation: inventory?.assetLocation || "",
+            category: inventory?.category?.name || "",
+            modifiers: Array.isArray(inventory?.modifiers)
+              ? inventory.modifiers
+                  .map((mod) => mod?.name || "")
+                  .filter(Boolean)
+                  .join(", ")
+              : "",
+            expiryDate: inventory?.expiryDate
+              ? new Date(inventory.expiryDate).toLocaleDateString()
+              : "",
+            manufactureDate: inventory?.manufactureDate
+              ? new Date(inventory.manufactureDate).toLocaleDateString()
+              : "",
+            createdAt: inventory?.createdAt
+              ? new Date(inventory.createdAt).toLocaleDateString()
+              : "",
+          };
+
+          const row = worksheet.addRow(rowData);
+
+          // Add borders to cells
+          row.eachCell({ includeEmpty: true }, (cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+        } catch (err) {
+          console.error(
+            `Error adding row for inventory ${inventory?.id || "unknown"}:`,
+            err
+          );
+        }
+      });
+
+      // Auto-fit columns
+      worksheet.columns.forEach((column) => {
+        if (column.key) {
+          try {
+            const values = worksheet.getColumn(column.key).values;
+            const maxLength = values
+              ? Math.max(
+                  ...values
+                    .map((v) => (v ? String(v).length : 0))
+                    .filter(Boolean)
+                )
+              : 10;
+            column.width = Math.min(Math.max(maxLength, 10), 50);
+          } catch (err) {
+            console.error(`Error auto-fitting column ${column.key}:`, err);
+            column.width = 15;
+          }
+        }
+      });
+
+      // Set response headers
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="inventories.xlsx"'
+      );
+
+      console.log("[Excel Export] Writing workbook to response");
+
+      // Write to response
+      await workbook.xlsx.write(res);
+
+      console.log("[Excel Export] Export completed successfully");
+
+      res.end();
+    } catch (error) {
+      console.error("[Excel Export Error]", error);
+      next(error);
     }
   }
 }

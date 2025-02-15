@@ -3,6 +3,7 @@ import MyError from "../utils/error.js";
 import { addDomain, deleteFile } from "../utils/file.js";
 import prisma from "../utils/prismaClient.js";
 import response from "../utils/response.js";
+import ExcelJS from "exceljs";
 
 class WbsCategoryController {
   static async create(req, res, next) {
@@ -177,6 +178,121 @@ class WbsCategoryController {
       } else {
         next(error);
       }
+    }
+  }
+
+  static async exportExcel(req, res, next) {
+    try {
+      console.log("[Excel Export] Starting category export process");
+
+      // Fetch all categories with their related inventories
+      const categories = await prisma.wbsCategory.findMany({
+        include: {
+          inventories: true,
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (categories.length === 0) {
+        throw new MyError("No categories found for export", 404);
+      }
+
+      // Create workbook and worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Categories");
+
+      // Define columns
+      worksheet.columns = [
+        { header: "Name", key: "name", width: 30 },
+        { header: "Image URL", key: "image", width: 50 },
+        { header: "Number of Inventories", key: "inventoryCount", width: 20 },
+        { header: "Created At", key: "createdAt", width: 20 },
+        { header: "Updated At", key: "updatedAt", width: 20 },
+      ];
+
+      // Style header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFE0E0E0" },
+      };
+
+      // Add category data
+      categories.forEach((category) => {
+        try {
+          const rowData = {
+            name: category?.name || "",
+            image: category?.image || "",
+            inventoryCount: category?.inventories?.length || 0,
+            createdAt: category?.createdAt
+              ? new Date(category.createdAt).toLocaleDateString()
+              : "",
+            updatedAt: category?.updatedAt
+              ? new Date(category.updatedAt).toLocaleDateString()
+              : "",
+          };
+
+          const row = worksheet.addRow(rowData);
+
+          // Add borders to cells
+          row.eachCell({ includeEmpty: true }, (cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+        } catch (err) {
+          console.error(
+            `Error adding row for category ${category?.id || "unknown"}:`,
+            err
+          );
+        }
+      });
+
+      // Auto-fit columns
+      worksheet.columns.forEach((column) => {
+        if (column.key) {
+          try {
+            const values = worksheet.getColumn(column.key).values;
+            const maxLength = values
+              ? Math.max(
+                  ...values
+                    .map((v) => (v ? String(v).length : 0))
+                    .filter(Boolean)
+                )
+              : 10;
+            column.width = Math.min(Math.max(maxLength, 10), 50);
+          } catch (err) {
+            console.error(`Error auto-fitting column ${column.key}:`, err);
+            column.width = 15;
+          }
+        }
+      });
+
+      // Set response headers
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="categories.xlsx"'
+      );
+
+      console.log("[Excel Export] Writing workbook to response");
+
+      // Write to response
+      await workbook.xlsx.write(res);
+
+      console.log("[Excel Export] Export completed successfully");
+
+      res.end();
+    } catch (error) {
+      console.error("[Excel Export Error]", error);
+      next(error);
     }
   }
 }

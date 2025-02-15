@@ -16,6 +16,7 @@ const ensureUpload = async (req, res, next) => {
 
 router.post("/", ensureUpload, upload, WbsInventoryController.create);
 router.get("/", WbsInventoryController.getAll);
+router.get("/export-excel", WbsInventoryController.exportExcel);
 router.get("/:id", WbsInventoryController.getById);
 router.put("/:id", ensureUpload, upload, WbsInventoryController.update);
 router.delete("/:id", WbsInventoryController.delete);
