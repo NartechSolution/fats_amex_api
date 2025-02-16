@@ -130,7 +130,7 @@ class FatsCategoryController {
 
       // Check if new mainCatCode conflicts with existing ones
       if (value.mainCatCode !== existingCategory.mainCatCode) {
-        const conflictingCategory = await prisma.fatsCategory.findUnique({
+        const conflictingCategory = await prisma.fatsCategory.findFirst({
           where: { mainCatCode: value.mainCatCode },
         });
 
