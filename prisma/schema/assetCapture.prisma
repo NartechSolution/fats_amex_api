@@ -1,0 +1,19 @@
+model AssetCapture {
+    id               String       @id @default(uuid())
+    locationId       String
+    location         Location     @relation(fields: [locationId], references: [id])
+    fatsCategoryId   String
+    fatsCategory     FatsCategory @relation(fields: [fatsCategoryId], references: [id])
+    assetDescription String?
+    serialNumber     String?
+    assetTag         String?
+    quantity         Int?
+    employeeId       String?
+    extNumber        String?
+    faNumber         String?
+    isVerified       Boolean      @default(false)
+    isGenerated      Boolean      @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,16 @@
+model Location {
+    id           String   @id @default(uuid())
+    company      String?
+    building     String?
+    levelFloor   String? // Using camelCase for the level/floor field
+    office       String?
+    room         String?
+    locationCode String?
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    // relations
+    assetCaptures AssetCapture[]
+
+    @@map("locations") // Specifies the table name in the database
+}
