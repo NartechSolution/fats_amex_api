@@ -9,6 +9,7 @@ import wbsModifierRoutes from "./routes/wbsModifiers.js";
 import wbsInventoryRoutes from "./routes/wbsInventory.js";
 import assetCaptureRoutes from "./routes/assetCapture.js";
 import locationRoutes from "./routes/location.js";
+import assetTagsRoutes from "./routes/assetTags.js";
 const router = express.Router();
 
 router.use("/user", userRoutes);
@@ -20,5 +21,5 @@ router.use("/wbs-modifier", wbsModifierRoutes);
 router.use("/wbs-inventory", wbsInventoryRoutes);
 router.use("/location", locationRoutes);
 router.use("/asset-capture", assetCaptureRoutes);
-
+router.use("/asset-tags", assetTagsRoutes);
 export default router;
