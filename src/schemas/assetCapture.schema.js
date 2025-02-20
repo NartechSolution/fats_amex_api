@@ -10,6 +10,8 @@ export const assetCaptureSchema = Joi.object({
   employeeId: Joi.string().optional(),
   extNumber: Joi.string().optional(),
   faNumber: Joi.string().optional(),
+  brand: Joi.string().optional(),
+  modal: Joi.string().optional(),
   isVerified: Joi.boolean().optional(),
   isGenerated: Joi.boolean().optional(),
 }).min(1);

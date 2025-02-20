@@ -11,7 +11,9 @@ model AssetCapture {
     employeeId       String?
     extNumber        String?
     faNumber         String?
-    isVerified       Boolean      @default(false)
+    brand            String?
+    modal            String?
+    isVerified       Boolean      @default(false) //no need onward will remove on the prod
     isGenerated      Boolean      @default(false)
     assetTags        AssetTag[]
     createdAt        DateTime     @default(now())
