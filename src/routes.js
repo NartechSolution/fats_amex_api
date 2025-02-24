@@ -10,6 +10,14 @@ import wbsInventoryRoutes from "./routes/wbsInventory.js";
 import assetCaptureRoutes from "./routes/assetCapture.js";
 import locationRoutes from "./routes/location.js";
 import assetTagsRoutes from "./routes/assetTags.js";
+import brandRoutes from "./routes/brand.js";
+import assetConditionRoutes from "./routes/assetCondition.js";
+import assetStatusRoutes from "./routes/assetStatus.js";
+import departmentRoutes from "./routes/department.js";
+import rolesTypeRoutes from "./routes/rolesType.js";
+import employRoutes from "./routes/employ.js";
+import assetVerificationRoutes from "./routes/assetVerification.js";
+
 const router = express.Router();
 
 router.use("/user", userRoutes);
@@ -22,4 +30,12 @@ router.use("/wbs-inventory", wbsInventoryRoutes);
 router.use("/location", locationRoutes);
 router.use("/asset-capture", assetCaptureRoutes);
 router.use("/asset-tags", assetTagsRoutes);
+router.use("/brand", brandRoutes);
+router.use("/asset-condition", assetConditionRoutes);
+router.use("/asset-status", assetStatusRoutes);
+router.use("/department", departmentRoutes);
+router.use("/roles-type", rolesTypeRoutes);
+router.use("/employee", employRoutes);
+router.use("/asset-verification", assetVerificationRoutes);
+
 export default router;

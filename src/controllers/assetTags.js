@@ -206,6 +206,36 @@ class AssetTagsController {
       next(error);
     }
   }
+
+  static async getByTagNumber(req, res, next) {
+    try {
+      const { tagNumber } = req.params;
+
+      const assetTag = await prisma.assetTag.findFirst({
+        where: { tagNumber },
+        include: {
+          assetCapture: {
+            include: {
+              location: true,
+              fatsCategory: true,
+            },
+          },
+        },
+      });
+
+      if (!assetTag) {
+        throw new MyError("Asset tag not found", 404);
+      }
+
+      res
+        .status(200)
+        .json(
+          response(200, true, "Asset tag retrieved successfully", assetTag)
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default AssetTagsController;

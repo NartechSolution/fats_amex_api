@@ -1,0 +1,7 @@
+model Employee {
+    id         String   @id @default(uuid())
+    employeeId String?
+    name       String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
