@@ -14,6 +14,7 @@ const assetVerificationSchema = {
     assetCategoryId: Joi.string().required(),
     assetOldTagNumber: Joi.string(),
     employeeId: Joi.string().required(),
+    assetDescription: Joi.string(),
     // Images will be handled by multer
   }),
   update: Joi.object({
@@ -29,6 +30,7 @@ const assetVerificationSchema = {
     assetCategoryId: Joi.string(),
     assetOldTagNumber: Joi.string(),
     employeeId: Joi.string(),
+    assetDescription: Joi.string(),
     // Images will be handled by multer
   }).min(1), // At least one field must be provided for update
 };

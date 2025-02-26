@@ -106,6 +106,7 @@ class AssetVerificationController {
           employeeId: true,
           createdAt: true,
           image1: true,
+          assetDescription: true,
         },
       });
 
@@ -154,6 +155,7 @@ class AssetVerificationController {
             category: category?.mainCategoryDesc,
             subCategory: category?.subCategoryDesc,
             employeeName: employee?.name,
+            assetDescription: asset.assetDescription,
             image1: asset.image1,
           };
         })
