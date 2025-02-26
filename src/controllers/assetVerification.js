@@ -71,6 +71,25 @@ class AssetVerificationController {
 
       const skip = (page - 1) * limit;
 
+      // First, find matching location IDs and category IDs based on search
+      const [matchingLocations, matchingCategories] = await Promise.all([
+        prisma.location.findMany({
+          where: {
+            locationCode: { contains: search },
+          },
+          select: { id: true },
+        }),
+        prisma.fatsCategory.findMany({
+          where: {
+            OR: [
+              { mainCategoryDesc: { contains: search } },
+              { subCategoryDesc: { contains: search } },
+            ],
+          },
+          select: { id: true },
+        }),
+      ]);
+
       const searchCondition = search
         ? {
             OR: [
@@ -78,6 +97,12 @@ class AssetVerificationController {
               { serialNumber: { contains: search } },
               { faNumber: { contains: search } },
               { brand: { contains: search } },
+              { locationId: { in: matchingLocations.map((loc) => loc.id) } },
+              {
+                assetCategoryId: {
+                  in: matchingCategories.map((cat) => cat.id),
+                },
+              },
             ],
           }
         : {};
