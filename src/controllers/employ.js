@@ -178,6 +178,67 @@ class EmployeeController {
       }
     }
   }
+
+  static async bulkCreate(req, res, next) {
+    try {
+      const employees = req.body;
+
+      if (!Array.isArray(employees)) {
+        throw new MyError("Request body must be an array of employees", 400);
+      }
+
+      // Validate each employee
+      const validatedEmployees = [];
+      for (const employee of employees) {
+        const { error, value } = employSchema.create.validate(employee);
+        if (error) {
+          throw new MyError(
+            `Validation error: ${error.details[0].message}`,
+            400
+          );
+        }
+        validatedEmployees.push(value);
+      }
+
+      // Check for duplicate employeeIds in the request
+      const employeeIds = validatedEmployees.map((emp) => emp.employeeId);
+      const uniqueIds = new Set(employeeIds);
+      if (uniqueIds.size !== employeeIds.length) {
+        throw new MyError("Duplicate employee IDs found in request", 400);
+      }
+
+      // Check for existing employeeIds in database
+      const existingEmployees = await prisma.employee.findMany({
+        where: {
+          employeeId: {
+            in: employeeIds,
+          },
+        },
+      });
+
+      if (existingEmployees.length > 0) {
+        throw new MyError(
+          `Employees with IDs ${existingEmployees
+            .map((e) => e.employeeId)
+            .join(", ")} already exist`,
+          409
+        );
+      }
+
+      // Bulk create employees
+      const createdEmployees = await prisma.employee.createMany({
+        data: validatedEmployees,
+      });
+
+      res.status(201).json(
+        response(201, true, "Employees created successfully", {
+          count: createdEmployees.count,
+        })
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default EmployeeController;

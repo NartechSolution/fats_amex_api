@@ -13,11 +13,11 @@ class FatsCategoryController {
 
       // Check if category with same mainCatCode exists
       const existingCategory = await prisma.fatsCategory.findFirst({
-        where: { mainCatCode: value.mainCatCode },
+        where: { subCategoryCode: value.subCategoryCode },
       });
 
       if (existingCategory) {
-        throw new MyError("Category with this code already exists", 409);
+        throw new MyError("Category with subCategoryCode already exists", 409);
       }
 
       const category = await prisma.fatsCategory.create({
@@ -53,7 +53,6 @@ class FatsCategoryController {
               { mainDescription: { contains: search } },
               { subCategoryCode: { contains: search } },
               { subCategoryDesc: { contains: search } },
-              { assetCategory: { contains: search } },
             ],
           }
         : {};
@@ -169,6 +168,42 @@ class FatsCategoryController {
       } else {
         next(error);
       }
+    }
+  }
+
+  static async bulkCreate(req, res, next) {
+    try {
+      const categories = req.body;
+
+      if (!Array.isArray(categories)) {
+        throw new MyError("Request body must be an array of categories", 400);
+      }
+
+      // Validate each category
+      const validatedCategories = [];
+      for (const category of categories) {
+        const { error, value } = fatsCategorySchema.validate(category);
+        if (error) {
+          throw new MyError(
+            `Validation error: ${error.details[0].message}`,
+            400
+          );
+        }
+        validatedCategories.push(value);
+      }
+
+      // Bulk create categories without any duplicate checks
+      const createdCategories = await prisma.fatsCategory.createMany({
+        data: validatedCategories,
+      });
+
+      res.status(201).json(
+        response(201, true, "Categories created successfully", {
+          count: createdCategories.count,
+        })
+      );
+    } catch (error) {
+      next(error);
     }
   }
 }

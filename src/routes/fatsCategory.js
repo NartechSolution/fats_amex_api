@@ -6,6 +6,7 @@ const router = express.Router();
 // router.use(verifyAccessToken);
 
 router.post("/", FatsCategoryController.create);
+router.post("/bulk", FatsCategoryController.bulkCreate);
 router.get("/", FatsCategoryController.getAll);
 router.get("/:id", FatsCategoryController.getById);
 router.put("/:id", FatsCategoryController.update);
