@@ -8,6 +8,7 @@ const router = express.Router();
 router.post("/", FatsCategoryController.create);
 router.post("/bulk", FatsCategoryController.bulkCreate);
 router.get("/", FatsCategoryController.getAll);
+router.get("/export/excel", FatsCategoryController.exportExcel);
 router.get("/:id", FatsCategoryController.getById);
 router.put("/:id", FatsCategoryController.update);
 router.delete("/:id", FatsCategoryController.delete);

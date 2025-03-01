@@ -4,6 +4,7 @@ import AssetTagsController from "../controllers/assetTags.js";
 const router = express.Router();
 
 router.get("/tag-number/:tagNumber", AssetTagsController.getByTagNumber);
+router.get("/export/excel", AssetTagsController.exportExcel);
 router.post("/generate", AssetTagsController.generate);
 router.get("/", AssetTagsController.getAll);
 router.get("/:id", AssetTagsController.getById);

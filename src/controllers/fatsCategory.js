@@ -2,6 +2,7 @@ import { fatsCategorySchema } from "../schemas/fatsCategory.schema.js";
 import MyError from "../utils/error.js";
 import prisma from "../utils/prismaClient.js";
 import response from "../utils/response.js";
+import ExcelJS from "exceljs";
 
 class FatsCategoryController {
   static async create(req, res, next) {
@@ -203,6 +204,148 @@ class FatsCategoryController {
         })
       );
     } catch (error) {
+      next(error);
+    }
+  }
+
+  static async exportExcel(req, res, next) {
+    try {
+      console.log("[Excel Export] Starting FATS categories export process");
+
+      const { search = "" } = req.query;
+      console.log("[Excel Export] Search query:", search);
+
+      // Build search conditions - same as in getAll method
+      const searchCondition = search
+        ? {
+            OR: [
+              { mainCatCode: { contains: search } },
+              { mainCategoryDesc: { contains: search } },
+              { mainDescription: { contains: search } },
+              { subCategoryCode: { contains: search } },
+              { subCategoryDesc: { contains: search } },
+            ],
+          }
+        : {};
+
+      // Fetch categories based on search condition
+      const categories = await prisma.fatsCategory.findMany({
+        where: searchCondition,
+        orderBy: { mainCatCode: "asc" },
+      });
+
+      if (categories.length === 0) {
+        throw new MyError("No categories found for export", 404);
+      }
+
+      // Create workbook and worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("FATS Categories");
+
+      // Define columns
+      worksheet.columns = [
+        { header: "Main Category Code", key: "mainCatCode", width: 20 },
+        {
+          header: "Main Category Description",
+          key: "mainCategoryDesc",
+          width: 35,
+        },
+        { header: "Main Description", key: "mainDescription", width: 35 },
+        { header: "Sub Category Code", key: "subCategoryCode", width: 20 },
+        {
+          header: "Sub Category Description",
+          key: "subCategoryDesc",
+          width: 35,
+        },
+        { header: "Created At", key: "createdAt", width: 20 },
+      ];
+
+      // Style header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFE0E0E0" },
+      };
+
+      // Add category data
+      categories.forEach((category) => {
+        try {
+          const rowData = {
+            mainCatCode: category?.mainCatCode || "",
+            mainCategoryDesc: category?.mainCategoryDesc || "",
+            mainDescription: category?.mainDescription || "",
+            subCategoryCode: category?.subCategoryCode || "",
+            subCategoryDesc: category?.subCategoryDesc || "",
+            createdAt: category?.createdAt
+              ? new Date(category.createdAt).toLocaleDateString()
+              : "",
+          };
+
+          const row = worksheet.addRow(rowData);
+
+          // Add borders to cells
+          row.eachCell({ includeEmpty: true }, (cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+        } catch (err) {
+          console.error(
+            `Error adding row for category ${category?.id || "unknown"}:`,
+            err
+          );
+        }
+      });
+
+      // Auto-fit columns
+      worksheet.columns.forEach((column) => {
+        if (column.key) {
+          try {
+            const values = worksheet.getColumn(column.key).values;
+            const maxLength = values
+              ? Math.max(
+                  ...values
+                    .map((v) => (v ? String(v).length : 0))
+                    .filter(Boolean)
+                )
+              : 10;
+            column.width = Math.min(Math.max(maxLength, 10), 50);
+          } catch (err) {
+            console.error(`Error auto-fitting column ${column.key}:`, err);
+            column.width = 15;
+          }
+        }
+      });
+
+      // Set filename based on whether it's filtered or not
+      const filename = search
+        ? `fats-categories-filtered-${search}.xlsx`
+        : "fats-categories.xlsx";
+
+      // Set response headers
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`
+      );
+
+      console.log("[Excel Export] Writing workbook to response");
+
+      // Write to response
+      await workbook.xlsx.write(res);
+
+      console.log("[Excel Export] Export completed successfully");
+
+      res.end();
+    } catch (error) {
+      console.error("[Excel Export Error]", error);
       next(error);
     }
   }

@@ -6,6 +6,7 @@ import { generateTagNumbers } from "../utils/tagNumberGenerator.js";
 import MyError from "../utils/error.js";
 import prisma from "../utils/prismaClient.js";
 import response from "../utils/response.js";
+import ExcelJS from "exceljs";
 
 class AssetTagsController {
   static async generate(req, res, next) {
@@ -233,6 +234,141 @@ class AssetTagsController {
           response(200, true, "Asset tag retrieved successfully", assetTag)
         );
     } catch (error) {
+      next(error);
+    }
+  }
+
+  static async exportExcel(req, res, next) {
+    try {
+      console.log("[Excel Export] Starting asset tags export process");
+
+      // Fetch all asset tags with related data
+      const assetTags = await prisma.assetTag.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+          assetCapture: {
+            include: {
+              location: true,
+              fatsCategory: true,
+            },
+          },
+        },
+      });
+
+      if (assetTags.length === 0) {
+        throw new MyError("No asset tags found for export", 404);
+      }
+
+      // Create workbook and worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Asset Tags");
+
+      // Define columns
+      worksheet.columns = [
+        { header: "Tag Number", key: "tagNumber", width: 20 },
+        { header: "Verification Status", key: "verificationStatus", width: 20 },
+        { header: "Location", key: "location", width: 30 },
+        { header: "Location Code", key: "locationCode", width: 20 },
+        { header: "Main Category", key: "mainCategory", width: 30 },
+        { header: "Sub Category", key: "subCategory", width: 30 },
+        { header: "Asset Description", key: "assetDescription", width: 40 },
+        { header: "Serial Number", key: "serialNumber", width: 25 },
+        { header: "Brand", key: "brand", width: 20 },
+        { header: "Model", key: "model", width: 20 },
+        { header: "FA Number", key: "faNumber", width: 20 },
+        { header: "Ext Number", key: "extNumber", width: 20 },
+        { header: "Created At", key: "createdAt", width: 20 },
+      ];
+
+      // Style header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFE0E0E0" },
+      };
+
+      // Add asset tag data
+      assetTags.forEach((tag) => {
+        try {
+          const rowData = {
+            tagNumber: tag?.tagNumber || "",
+            verificationStatus: tag?.isVerified ? "Verified" : "Not Verified",
+            location: tag?.assetCapture?.location?.company || "",
+            locationCode: tag?.assetCapture?.location?.locationCode || "",
+            mainCategory:
+              tag?.assetCapture?.fatsCategory?.mainCategoryDesc || "",
+            subCategory: tag?.assetCapture?.fatsCategory?.subCategoryDesc || "",
+            assetDescription: tag?.assetCapture?.assetDescription || "",
+            serialNumber: tag?.assetCapture?.serialNumber || "",
+            brand: tag?.assetCapture?.brand || "",
+            model: tag?.assetCapture?.modal || "",
+            faNumber: tag?.assetCapture?.faNumber || "",
+            extNumber: tag?.assetCapture?.extNumber || "",
+            createdAt: tag?.createdAt
+              ? new Date(tag.createdAt).toLocaleDateString()
+              : "",
+          };
+
+          const row = worksheet.addRow(rowData);
+
+          // Add borders to cells
+          row.eachCell({ includeEmpty: true }, (cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+        } catch (err) {
+          console.error(
+            `Error adding row for asset tag ${tag?.id || "unknown"}:`,
+            err
+          );
+        }
+      });
+
+      // Auto-fit columns
+      worksheet.columns.forEach((column) => {
+        if (column.key) {
+          try {
+            const values = worksheet.getColumn(column.key).values;
+            const maxLength = values
+              ? Math.max(
+                  ...values
+                    .map((v) => (v ? String(v).length : 0))
+                    .filter(Boolean)
+                )
+              : 10;
+            column.width = Math.min(Math.max(maxLength, 10), 50);
+          } catch (err) {
+            console.error(`Error auto-fitting column ${column.key}:`, err);
+            column.width = 15;
+          }
+        }
+      });
+
+      // Set response headers
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="asset-tags.xlsx"'
+      );
+
+      console.log("[Excel Export] Writing workbook to response");
+
+      // Write to response
+      await workbook.xlsx.write(res);
+
+      console.log("[Excel Export] Export completed successfully");
+
+      res.end();
+    } catch (error) {
+      console.error("[Excel Export Error]", error);
       next(error);
     }
   }

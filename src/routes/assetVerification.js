@@ -24,6 +24,7 @@ const ensureUpload = async (req, res, next) => {
 
 router.post("/", ensureUpload, upload, AssetVerificationController.create);
 router.get("/", AssetVerificationController.getAll);
+router.get("/export/excel", AssetVerificationController.exportExcel);
 router.get("/:id", AssetVerificationController.getById);
 router.put("/:id", ensureUpload, upload, AssetVerificationController.update);
 router.delete("/:id", AssetVerificationController.delete);
