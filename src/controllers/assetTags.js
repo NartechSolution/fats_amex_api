@@ -87,9 +87,48 @@ class AssetTagsController {
         order = "desc",
       } = req.query;
       const skip = (page - 1) * limit;
+
+      // Enhanced search condition to search across multiple fields and related tables
       const searchCondition = search
         ? {
-            OR: [{ tagNumber: { contains: search } }],
+            OR: [
+              { tagNumber: { contains: search } },
+              {
+                assetCapture: {
+                  OR: [
+                    { assetDescription: { contains: search } },
+                    { serialNumber: { contains: search } },
+                    { brand: { contains: search } },
+                    { modal: { contains: search } },
+                    { faNumber: { contains: search } },
+                    { extNumber: { contains: search } },
+                    {
+                      location: {
+                        OR: [
+                          { company: { contains: search } },
+                          { building: { contains: search } },
+                          { levelFloor: { contains: search } },
+                          { office: { contains: search } },
+                          { room: { contains: search } },
+                          { locationCode: { contains: search } },
+                        ],
+                      },
+                    },
+                    {
+                      fatsCategory: {
+                        OR: [
+                          { mainCatCode: { contains: search } },
+                          { mainCategoryDesc: { contains: search } },
+                          { mainDescription: { contains: search } },
+                          { subCategoryCode: { contains: search } },
+                          { subCategoryDesc: { contains: search } },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           }
         : {};
 
@@ -99,7 +138,10 @@ class AssetTagsController {
         ...searchCondition,
       };
 
-      const total = await prisma.assetTag.count({ where: whereCondition });
+      const total = await prisma.assetTag.count({
+        where: whereCondition,
+      });
+
       const assetTags = await prisma.assetTag.findMany({
         where: whereCondition,
         skip,

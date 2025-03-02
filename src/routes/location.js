@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post("/", LocationController.create);
 router.get("/", LocationController.getAll);
+router.get("/export/excel", LocationController.exportExcel);
 router.get("/:id", LocationController.getById);
 router.put("/:id", LocationController.update);
 router.delete("/:id", LocationController.delete);

@@ -2,6 +2,7 @@ import prisma from "../utils/prismaClient.js";
 import employSchema from "../schemas/employ.schema.js";
 import response from "../utils/response.js";
 import MyError from "../utils/error.js";
+import ExcelJS from "exceljs";
 
 class EmployeeController {
   static async create(req, res, next) {
@@ -236,6 +237,119 @@ class EmployeeController {
         })
       );
     } catch (error) {
+      next(error);
+    }
+  }
+
+  static async exportExcel(req, res, next) {
+    try {
+      console.log("[Excel Export] Starting employees export process");
+
+      // Fetch all employees without search condition
+      const employees = await prisma.employee.findMany({
+        orderBy: { employeeId: "asc" },
+      });
+
+      if (employees.length === 0) {
+        throw new MyError("No employees found for export", 404);
+      }
+
+      // Create workbook and worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Employees");
+
+      // Define columns
+      worksheet.columns = [
+        { header: "Employee ID", key: "employeeId", width: 20 },
+        { header: "Name", key: "name", width: 30 },
+        { header: "Created At", key: "createdAt", width: 20 },
+        { header: "Updated At", key: "updatedAt", width: 20 },
+      ];
+
+      // Style header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFE0E0E0" },
+      };
+
+      // Add employee data
+      employees.forEach((employee) => {
+        try {
+          const rowData = {
+            employeeId: employee?.employeeId || "",
+            name: employee?.name || "",
+            createdAt: employee?.createdAt
+              ? new Date(employee.createdAt).toLocaleDateString()
+              : "",
+            updatedAt: employee?.updatedAt
+              ? new Date(employee.updatedAt).toLocaleDateString()
+              : "",
+          };
+
+          const row = worksheet.addRow(rowData);
+
+          // Add borders to cells
+          row.eachCell({ includeEmpty: true }, (cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+        } catch (err) {
+          console.error(
+            `Error adding row for employee ${employee?.id || "unknown"}:`,
+            err
+          );
+        }
+      });
+
+      // Auto-fit columns
+      worksheet.columns.forEach((column) => {
+        if (column.key) {
+          try {
+            const values = worksheet.getColumn(column.key).values;
+            const maxLength = values
+              ? Math.max(
+                  ...values
+                    .map((v) => (v ? String(v).length : 0))
+                    .filter(Boolean)
+                )
+              : 10;
+            column.width = Math.min(Math.max(maxLength, 10), 50);
+          } catch (err) {
+            console.error(`Error auto-fitting column ${column.key}:`, err);
+            column.width = 15;
+          }
+        }
+      });
+
+      // Set filename
+      const filename = "employees.xlsx";
+
+      // Set response headers
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`
+      );
+
+      console.log("[Excel Export] Writing workbook to response");
+
+      // Write to response
+      await workbook.xlsx.write(res);
+
+      console.log("[Excel Export] Export completed successfully");
+
+      res.end();
+    } catch (error) {
+      console.error("[Excel Export Error]", error);
       next(error);
     }
   }

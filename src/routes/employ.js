@@ -6,6 +6,7 @@ const router = express.Router();
 router.post("/", EmployeeController.create);
 router.post("/bulk", EmployeeController.bulkCreate);
 router.get("/", EmployeeController.getAll);
+router.get("/export/excel", EmployeeController.exportExcel);
 router.get("/:id", EmployeeController.getById);
 router.put("/:id", EmployeeController.update);
 router.delete("/:id", EmployeeController.delete);

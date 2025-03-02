@@ -28,5 +28,9 @@ router.get("/export/excel", AssetVerificationController.exportExcel);
 router.get("/:id", AssetVerificationController.getById);
 router.put("/:id", ensureUpload, upload, AssetVerificationController.update);
 router.delete("/:id", AssetVerificationController.delete);
+router.delete(
+  "/:id/image/:imageField",
+  AssetVerificationController.deleteImage
+);
 
 export default router;

@@ -357,6 +357,62 @@ class AssetVerificationController {
     }
   }
 
+  /**
+   * Delete a specific image from an asset verification
+   */
+  static async deleteImage(req, res, next) {
+    try {
+      const { id, imageField } = req.params;
+
+      // Validate the image field parameter
+      if (
+        !["image1", "image2", "image3", "image4", "image5"].includes(imageField)
+      ) {
+        throw new MyError(
+          "Invalid image field. Must be one of: image1, image2, image3, image4, image5",
+          400
+        );
+      }
+
+      // Find the asset verification
+      const assetVerification = await prisma.assetVerification.findUnique({
+        where: { id },
+        select: {
+          [imageField]: true,
+        },
+      });
+
+      if (!assetVerification) {
+        throw new MyError("Asset verification not found", 404);
+      }
+
+      // Check if the image exists
+      if (!assetVerification[imageField]) {
+        throw new MyError(
+          `No ${imageField} found for this asset verification`,
+          404
+        );
+      }
+
+      // Delete the file
+      await deleteFile(assetVerification[imageField]);
+
+      // Update the database to set the image field to null
+      await prisma.assetVerification.update({
+        where: { id },
+        data: {
+          [imageField]: null,
+        },
+      });
+
+      res
+        .status(200)
+        .json(response(200, true, `${imageField} deleted successfully`, null));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async exportExcel(req, res, next) {
     try {
       console.log("[Excel Export] Starting asset verification export process");
