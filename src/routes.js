@@ -17,6 +17,7 @@ import departmentRoutes from "./routes/department.js";
 import rolesTypeRoutes from "./routes/rolesType.js";
 import employRoutes from "./routes/employ.js";
 import assetVerificationRoutes from "./routes/assetVerification.js";
+import fatsStatsRoutes from "./routes/fatsStats.js";
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.use("/wbs-category", wbsCategoryRoutes);
 router.use("/wbs-modifier", wbsModifierRoutes);
 router.use("/wbs-inventory", wbsInventoryRoutes);
 router.use("/location", locationRoutes);
+router.use("/fats-stats", fatsStatsRoutes);
 router.use("/asset-capture", assetCaptureRoutes);
 router.use("/asset-tags", assetTagsRoutes);
 router.use("/brand", brandRoutes);
