@@ -1,0 +1,53 @@
+model TblAssetMasterEncodeAssetCaptureFinal {
+  id                                String   @id @default(cuid())
+
+  majorCategory                     String?
+  majorCategoryDescription          String?
+  minorCategory                     String?
+  minorCategoryDescription          String?
+  tagNumber                         String?
+  serialNumber                      String?
+  assetDescription                  String?
+  assetType                         String?
+  assetCondition                    String?
+  country                           String?
+  region                            String?
+  cityName                          String?
+  dao                               String?
+  daoName                           String?
+  businessUnit                      String?
+  buildingNo                        String?
+  floorNo                           String?
+  employeeId                        String?
+  poNumber                          String?
+  poDate                            String?
+  deliveryNoteNo                    String?
+  supplier                          String?
+  invoiceNo                         String?
+  invoiceDate                       String?
+  modelOfAsset                      String?
+  manufacturer                      String?
+  ownership                         String?
+  bought                            String?
+  terminalId                        String?
+  atmNumber                         String?
+  locationTag                       String?
+  buildingName                      String?
+  buildingAddress                   String?
+  userLoginId                       String?
+  mainSubSeriesNo                   Int?
+  assetDateCaptured                 String?
+  assetTimeCaptured                 String?
+  assetDateScanned                  String?
+  assetTimeScanned                  String?
+  qty                               Int?
+  phoneExtNo                        String?
+  fullLocationDetails               String?
+  journalRefNo                      String?
+  image                             String?
+
+  createdAt                         DateTime @default(now())
+  updatedAt                         DateTime @updatedAt
+
+
+}

@@ -1,9 +1,9 @@
+import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import express from "express";
 import path, { dirname } from "path";
 import swaggerUi from "swagger-ui-express";
 import { fileURLToPath } from "url";
-import bodyParser from "body-parser";
 
 import config from "./config/config.js";
 import swaggerSpec from "./config/swagger.js";

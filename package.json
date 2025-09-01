@@ -8,7 +8,8 @@
     "start": "nodemon src/app.js",
     "dev": "nodemon src/app.js",
     "workers": "nodemon src/workers/index.js",
-    "prisma-push": "npx prisma db push",
+    "prisma:push": "npx prisma db push --schema=prisma/",
+    "prisma:generate": "npx prisma generate --schema=prisma/",
     "test": "jest",
     "seed": "node seed/index.js",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org gst-sz --project gst-api ./ && sentry-cli sourcemaps upload --org gst-sz --project gst-api ./"
@@ -38,6 +39,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "multermate": "^2.1.1",
     "multermate-es": "^1.0.1",
     "nanoid": "^5.0.9",
     "nodemailer": "^6.9.16",
