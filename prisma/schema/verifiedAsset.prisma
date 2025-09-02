@@ -1,3 +1,5 @@
+// tbl asset master encode asset capture final <--->
+
 model VerifiedAsset {
   id                                String   @id @default(cuid())
 

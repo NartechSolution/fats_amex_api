@@ -6,16 +6,39 @@ import response from "../utils/response.js";
 
 class VerifiedAssetController {
   static async create(req, res, next) {
-    let imagePath;
+    let uploadedPaths = [];
     try {
       const { error, value } = verifiedAssetSchema.validate(req.body);
       if (error) {
         throw new MyError(error.details[0].message, 400);
       }
 
-      if (req.file) {
-        imagePath = addDomain(req.file.path);
-        value.image = imagePath;
+      // Handle multiple image uploads
+      if (req.files && req.files.length > 0) {
+        const imagesArray = [];
+
+        for (const file of req.files) {
+          const imagePath = addDomain(file.path);
+          uploadedPaths.push(imagePath);
+
+          const imageObj = {
+            id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            path: imagePath,
+          };
+          imagesArray.push(imageObj);
+        }
+
+        value.images = JSON.stringify(imagesArray);
+      } else if (req.file) {
+        // Fallback for single file upload
+        const imagePath = addDomain(req.file.path);
+        uploadedPaths.push(imagePath);
+
+        const imageObj = {
+          id: Date.now().toString(),
+          path: imagePath,
+        };
+        value.images = JSON.stringify([imageObj]);
       }
 
       const verifiedAsset = await prisma.verifiedAsset.create({
@@ -33,8 +56,15 @@ class VerifiedAssetController {
           )
         );
     } catch (error) {
-      if (imagePath) {
-        await deleteFile(imagePath);
+      // Clean up uploaded files on error
+      if (uploadedPaths.length > 0) {
+        for (const path of uploadedPaths) {
+          try {
+            await deleteFile(path);
+          } catch (deleteError) {
+            console.error("Error deleting file on error cleanup:", deleteError);
+          }
+        }
       }
       next(error);
     }
@@ -149,6 +179,7 @@ class VerifiedAssetController {
   }
 
   static async update(req, res, next) {
+    let uploadedPaths = [];
     try {
       const { id } = req.params;
       const { error, value } = verifiedAssetSchema.validate(req.body);
@@ -164,12 +195,34 @@ class VerifiedAssetController {
         throw new MyError("Verified asset not found", 404);
       }
 
+      // Handle image upload (single file for update)
       if (req.file) {
         const imagePath = addDomain(req.file.path);
-        value.image = imagePath;
-        if (verifiedAsset.image) {
-          await deleteFile(verifiedAsset.image);
+        uploadedPaths.push(imagePath);
+
+        // Handle existing images - delete them
+        if (verifiedAsset.images) {
+          try {
+            const existingImages = JSON.parse(verifiedAsset.images);
+            // Delete old image files
+            for (const img of existingImages) {
+              try {
+                await deleteFile(img.path);
+              } catch (deleteError) {
+                console.error("Error deleting existing image:", deleteError);
+              }
+            }
+          } catch (e) {
+            console.error("Error parsing existing images:", e);
+          }
         }
+
+        // Create new images array with the uploaded file
+        const imageObj = {
+          id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          path: imagePath,
+        };
+        value.images = JSON.stringify([imageObj]);
       }
 
       const item = await prisma.verifiedAsset.update({
@@ -181,6 +234,17 @@ class VerifiedAssetController {
         .status(200)
         .json(response(200, true, "Verified asset updated successfully", item));
     } catch (error) {
+      // Clean up uploaded files on error
+      if (uploadedPaths.length > 0) {
+        for (const path of uploadedPaths) {
+          try {
+            await deleteFile(path);
+          } catch (deleteError) {
+            console.error("Error deleting file on error cleanup:", deleteError);
+          }
+        }
+      }
+
       if (error.code === "P2025") {
         next(new MyError("Verified asset not found", 404));
       } else {
@@ -201,8 +265,22 @@ class VerifiedAssetController {
         throw new MyError("Verified asset not found", 404);
       }
 
-      if (verifiedAsset.image) {
-        await deleteFile(verifiedAsset.image);
+      // Delete associated image files
+      if (verifiedAsset.images) {
+        try {
+          const images = JSON.parse(verifiedAsset.images);
+          // Delete all image files
+          for (const img of images) {
+            try {
+              await deleteFile(img.path);
+            } catch (deleteError) {
+              console.error("Error deleting image file:", deleteError);
+              // Continue with deletion even if file deletion fails
+            }
+          }
+        } catch (e) {
+          console.error("Error parsing images for deletion:", e);
+        }
       }
 
       await prisma.verifiedAsset.delete({

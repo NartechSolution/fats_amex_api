@@ -44,5 +44,5 @@ export const verifiedAssetSchema = Joi.object({
   phoneExtNo: Joi.string().optional(),
   fullLocationDetails: Joi.string().optional(),
   journalRefNo: Joi.string().optional(),
-  image: Joi.string().optional(),
+  images: Joi.string().optional(),
 });
