@@ -14,8 +14,8 @@ import inventoryRoutes from "./routes/inventory.js";
 import locationRoutes from "./routes/location.js";
 import roleRoutes from "./routes/role.js";
 import rolesTypeRoutes from "./routes/rolesType.js";
-import tblAssetMasterEncodeAssetCaptureFinalRoutes from "./routes/TblAssetMasterEncodeAssetCaptureFinal.js";
 import userRoutes from "./routes/user.js";
+import verifiedAssetRoutes from "./routes/verifiedAsset.js";
 import wbsCategoryRoutes from "./routes/wbsCategory.js";
 import wbsInventoryRoutes from "./routes/wbsInventory.js";
 import wbsModifierRoutes from "./routes/wbsModifiers.js";
@@ -40,6 +40,6 @@ router.use("/department", departmentRoutes);
 router.use("/roles-type", rolesTypeRoutes);
 router.use("/employee", employRoutes);
 router.use("/asset-verification", assetVerificationRoutes);
-router.use("/asset-master-encode", tblAssetMasterEncodeAssetCaptureFinalRoutes);
+router.use("/verified-asset", verifiedAssetRoutes);
 
 export default router;

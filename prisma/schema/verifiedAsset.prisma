@@ -1,4 +1,4 @@
-model TblAssetMasterEncodeAssetCaptureFinal {
+model VerifiedAsset {
   id                                String   @id @default(cuid())
 
   majorCategory                     String?
@@ -44,10 +44,8 @@ model TblAssetMasterEncodeAssetCaptureFinal {
   phoneExtNo                        String?
   fullLocationDetails               String?
   journalRefNo                      String?
-  image                             String?
+  images                            String?
 
   createdAt                         DateTime @default(now())
   updatedAt                         DateTime @updatedAt
-
-
 }

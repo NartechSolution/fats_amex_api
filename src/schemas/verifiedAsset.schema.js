@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const tblAssetMasterEncodeAssetCaptureFinalSchema = Joi.object({
+export const verifiedAssetSchema = Joi.object({
   majorCategory: Joi.string().optional(),
   majorCategoryDescription: Joi.string().optional(),
   minorCategory: Joi.string().optional(),

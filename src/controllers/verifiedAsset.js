@@ -1,28 +1,26 @@
-import { tblAssetMasterEncodeAssetCaptureFinalSchema } from "../schemas/TblAssetMasterEncodeAssetCaptureFinal.schema.js";
+import { verifiedAssetSchema } from "../schemas/verifiedAsset.schema.js";
 import MyError from "../utils/error.js";
 import { addDomain, deleteFile } from "../utils/file.js";
 import prisma from "../utils/prismaClient.js";
 import response from "../utils/response.js";
 
-class TblAssetMasterEncodeAssetCaptureFinalController {
+class VerifiedAssetController {
   static async create(req, res, next) {
     let imagePath;
     try {
-      const { error, value } =
-        tblAssetMasterEncodeAssetCaptureFinalSchema.validate(req.body);
+      const { error, value } = verifiedAssetSchema.validate(req.body);
       if (error) {
         throw new MyError(error.details[0].message, 400);
       }
 
       if (req.file) {
-        imagePath = req.file.path;
+        imagePath = addDomain(req.file.path);
         value.image = imagePath;
       }
 
-      const assetMaster =
-        await prisma.tblAssetMasterEncodeAssetCaptureFinal.create({
-          data: value,
-        });
+      const verifiedAsset = await prisma.verifiedAsset.create({
+        data: value,
+      });
 
       res
         .status(201)
@@ -30,8 +28,8 @@ class TblAssetMasterEncodeAssetCaptureFinalController {
           response(
             201,
             true,
-            "Asset master record created successfully",
-            assetMaster
+            "Verified asset created successfully",
+            verifiedAsset
           )
         );
     } catch (error) {
@@ -96,33 +94,30 @@ class TblAssetMasterEncodeAssetCaptureFinalController {
         : {};
 
       // Get total count
-      const total = await prisma.tblAssetMasterEncodeAssetCaptureFinal.count({
+      const total = await prisma.verifiedAsset.count({
         where: searchCondition,
       });
 
-      // Get asset master records with pagination
-      const items = await prisma.tblAssetMasterEncodeAssetCaptureFinal.findMany(
-        {
-          where: searchCondition,
-          skip,
-          take: Number(limit),
-          orderBy: {
-            [sortBy]: order,
-          },
-        }
-      );
+      // Get verified assets with pagination
+      const items = await prisma.verifiedAsset.findMany({
+        where: searchCondition,
+        skip,
+        take: Number(limit),
+        orderBy: {
+          [sortBy]: order,
+        },
+      });
 
       const totalPages = Math.ceil(total / limit);
 
       res.status(200).json(
-        response(200, true, "Asset master records retrieved successfully", {
+        response(200, true, "Verified assets retrieved successfully", {
           items,
           pagination: {
             total,
             page: Number(page),
             totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1,
+            hasMore: page < totalPages,
           },
         })
       );
@@ -135,24 +130,18 @@ class TblAssetMasterEncodeAssetCaptureFinalController {
     try {
       const { id } = req.params;
 
-      const item =
-        await prisma.tblAssetMasterEncodeAssetCaptureFinal.findUnique({
-          where: { id },
-        });
+      const item = await prisma.verifiedAsset.findUnique({
+        where: { id },
+      });
 
       if (!item) {
-        throw new MyError("Asset master record not found", 404);
+        throw new MyError("Verified asset not found", 404);
       }
 
       res
         .status(200)
         .json(
-          response(
-            200,
-            true,
-            "Asset master record retrieved successfully",
-            item
-          )
+          response(200, true, "Verified asset retrieved successfully", item)
         );
     } catch (error) {
       next(error);
@@ -162,42 +151,38 @@ class TblAssetMasterEncodeAssetCaptureFinalController {
   static async update(req, res, next) {
     try {
       const { id } = req.params;
-      const { error, value } =
-        tblAssetMasterEncodeAssetCaptureFinalSchema.validate(req.body);
+      const { error, value } = verifiedAssetSchema.validate(req.body);
       if (error) {
         throw new MyError(error.details[0].message, 400);
       }
 
-      const assetMaster =
-        await prisma.tblAssetMasterEncodeAssetCaptureFinal.findUnique({
-          where: { id },
-        });
+      const verifiedAsset = await prisma.verifiedAsset.findUnique({
+        where: { id },
+      });
 
-      if (!assetMaster) {
-        throw new MyError("Asset master record not found", 404);
+      if (!verifiedAsset) {
+        throw new MyError("Verified asset not found", 404);
       }
 
       if (req.file) {
         const imagePath = addDomain(req.file.path);
         value.image = imagePath;
-        if (assetMaster.image) {
-          await deleteFile(assetMaster.image);
+        if (verifiedAsset.image) {
+          await deleteFile(verifiedAsset.image);
         }
       }
 
-      const item = await prisma.tblAssetMasterEncodeAssetCaptureFinal.update({
+      const item = await prisma.verifiedAsset.update({
         where: { id },
         data: value,
       });
 
       res
         .status(200)
-        .json(
-          response(200, true, "Asset master record updated successfully", item)
-        );
+        .json(response(200, true, "Verified asset updated successfully", item));
     } catch (error) {
       if (error.code === "P2025") {
-        next(new MyError("Asset master record not found", 404));
+        next(new MyError("Verified asset not found", 404));
       } else {
         next(error);
       }
@@ -208,31 +193,28 @@ class TblAssetMasterEncodeAssetCaptureFinalController {
     try {
       const { id } = req.params;
 
-      const assetMaster =
-        await prisma.tblAssetMasterEncodeAssetCaptureFinal.findUnique({
-          where: { id },
-        });
+      const verifiedAsset = await prisma.verifiedAsset.findUnique({
+        where: { id },
+      });
 
-      if (!assetMaster) {
-        throw new MyError("Asset master record not found", 404);
+      if (!verifiedAsset) {
+        throw new MyError("Verified asset not found", 404);
       }
 
-      if (assetMaster.image) {
-        await deleteFile(assetMaster.image);
+      if (verifiedAsset.image) {
+        await deleteFile(verifiedAsset.image);
       }
 
-      await prisma.tblAssetMasterEncodeAssetCaptureFinal.delete({
+      await prisma.verifiedAsset.delete({
         where: { id },
       });
 
       res
         .status(200)
-        .json(
-          response(200, true, "Asset master record deleted successfully", null)
-        );
+        .json(response(200, true, "Verified asset deleted successfully", null));
     } catch (error) {
       if (error.code === "P2025") {
-        next(new MyError("Asset master record not found", 404));
+        next(new MyError("Verified asset not found", 404));
       } else {
         next(error);
       }
@@ -240,4 +222,4 @@ class TblAssetMasterEncodeAssetCaptureFinalController {
   }
 }
 
-export default TblAssetMasterEncodeAssetCaptureFinalController;
+export default VerifiedAssetController;
