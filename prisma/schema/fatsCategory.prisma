@@ -1,14 +1,15 @@
 model FatsCategory {
-  id                   String    @id @default(uuid())
-  mainCatCode          String?
-  mainCategoryDesc     String?
-  mainDescription      String?
-  subCategoryCode      String?
-  subCategoryDesc      String?
-  counter              Int      @default(autoincrement())
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  id               String   @id @default(uuid())
+  mainCatCode      String?
+  mainCategoryDesc String?
+  mainDescription  String?
+  subCategoryCode  String?
+  subCategoryDesc  String?
+  counter          Int      @default(autoincrement())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // relations
-  assetCaptures AssetCapture[]
+  assetCaptures   AssetCapture[]
+  assetCapturePDA AssetCapturePDA[]
 }

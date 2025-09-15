@@ -1,9 +1,11 @@
 model AssetTag {
-    id             String       @id @default(uuid())
-    tagNumber      String
-    assetCaptureId String
-    assetCapture   AssetCapture @relation(fields: [assetCaptureId], references: [id])
-    isVerified     Boolean      @default(false)
+    id                String           @id @default(uuid())
+    tagNumber         String
+    assetCaptureId    String?
+    assetCapture      AssetCapture?    @relation(fields: [assetCaptureId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    assetCapturePDAId String?
+    assetCapturePDA   AssetCapturePDA? @relation(fields: [assetCapturePDAId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    isVerified        Boolean          @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

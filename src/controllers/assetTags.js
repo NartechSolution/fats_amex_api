@@ -1,6 +1,7 @@
 import {
   generateAssetTagsSchema,
   assetTagSchema,
+  updateAssetTagSchema,
 } from "../schemas/assetTags.schema.js";
 import { generateTagNumbers } from "../utils/tagNumberGenerator.js";
 import MyError from "../utils/error.js";
@@ -197,6 +198,68 @@ class AssetTagsController {
         .status(200)
         .json(
           response(200, true, "Asset tag retrieved successfully", assetTag)
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async update(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { error, value } = updateAssetTagSchema.validate(req.body);
+
+      if (error) {
+        throw new MyError(error.details[0].message, 400);
+      }
+
+      // Check if asset tag exists
+      const existingAssetTag = await prisma.assetTag.findUnique({
+        where: { id },
+        include: { assetCapture: true },
+      });
+
+      if (!existingAssetTag) {
+        throw new MyError("Asset tag not found", 404);
+      }
+
+      const { assetCapture, ...assetTagData } = value;
+
+      // Update asset tag data
+      let updatedAssetTag = existingAssetTag;
+      if (Object.keys(assetTagData).length > 0) {
+        updatedAssetTag = await prisma.assetTag.update({
+          where: { id },
+          data: assetTagData,
+        });
+      }
+
+      // Update asset capture data if provided
+      let updatedAssetCapture = existingAssetTag.assetCapture;
+      if (assetCapture && Object.keys(assetCapture).length > 0) {
+        updatedAssetCapture = await prisma.assetCapture.update({
+          where: { id: existingAssetTag.assetCaptureId },
+          data: assetCapture,
+        });
+      }
+
+      // Fetch the complete updated asset tag with related data
+      const finalAssetTag = await prisma.assetTag.findUnique({
+        where: { id },
+        include: {
+          assetCapture: {
+            include: {
+              location: true,
+              fatsCategory: true,
+            },
+          },
+        },
+      });
+
+      res
+        .status(200)
+        .json(
+          response(200, true, "Asset tag updated successfully", finalAssetTag)
         );
     } catch (error) {
       next(error);

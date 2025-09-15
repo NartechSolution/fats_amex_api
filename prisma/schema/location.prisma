@@ -10,7 +10,8 @@ model Location {
     updatedAt    DateTime @updatedAt
 
     // relations
-    assetCaptures AssetCapture[]
+    assetCaptures   AssetCapture[]
+    assetCapturePDA AssetCapturePDA[]
 
     @@map("locations") // Specifies the table name in the database
 }

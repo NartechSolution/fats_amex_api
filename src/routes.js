@@ -1,6 +1,7 @@
 import express from "express";
 
 import assetCaptureRoutes from "./routes/assetCapture.js";
+import assetCapturePDARoutes from "./routes/assetCapturePDA.js";
 import assetConditionRoutes from "./routes/assetCondition.js";
 import assetStatusRoutes from "./routes/assetStatus.js";
 import assetTagsRoutes from "./routes/assetTags.js";
@@ -32,6 +33,7 @@ router.use("/wbs-inventory", wbsInventoryRoutes);
 router.use("/location", locationRoutes);
 router.use("/fats-stats", fatsStatsRoutes);
 router.use("/asset-capture", assetCaptureRoutes);
+router.use("/asset-capture-pda", assetCapturePDARoutes);
 router.use("/asset-tags", assetTagsRoutes);
 router.use("/brand", brandRoutes);
 router.use("/asset-condition", assetConditionRoutes);

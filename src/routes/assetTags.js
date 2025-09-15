@@ -8,6 +8,7 @@ router.get("/export/excel", AssetTagsController.exportExcel);
 router.post("/generate", AssetTagsController.generate);
 router.get("/", AssetTagsController.getAll);
 router.get("/:id", AssetTagsController.getById);
+router.put("/:id", AssetTagsController.update);
 router.delete("/:assetTagId", AssetTagsController.delete);
 
 export default router;
