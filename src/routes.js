@@ -11,6 +11,7 @@ import departmentRoutes from "./routes/department.js";
 import employRoutes from "./routes/employ.js";
 import fatsCategoryRoutes from "./routes/fatsCategory.js";
 import fatsStatsRoutes from "./routes/fatsStats.js";
+import gatePassRoutes from "./routes/gatePass.js";
 import inventoryRoutes from "./routes/inventory.js";
 import locationRoutes from "./routes/location.js";
 import roleRoutes from "./routes/role.js";
@@ -43,5 +44,6 @@ router.use("/roles-type", rolesTypeRoutes);
 router.use("/employee", employRoutes);
 router.use("/asset-verification", assetVerificationRoutes);
 router.use("/verified-asset", verifiedAssetRoutes);
+router.use("/gate-pass", gatePassRoutes);
 
 export default router;

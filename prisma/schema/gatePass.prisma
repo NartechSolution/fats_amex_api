@@ -1,0 +1,45 @@
+model GatePass {
+  id                    String           @id @default(cuid())
+  gatePassNo            String?        @unique
+  gatePassType          String?
+  gatePassDate          DateTime?
+  returnable            Boolean?
+  sourceSite            String?
+  destinationSite       String?
+  sender                String?
+  receiver              String?
+  driverName            String?
+  vehicleNo             String?
+  vehicleCompany        String?
+  preparedBy            String?
+  hodName               String?
+  hodStatus             String?
+  hodDate               DateTime?
+  authorizedBy          String?
+  authorizedStatus      String
+  authorizedDate        DateTime?
+  remarks               String?
+  qrcode                String?       // QR code data or image path
+
+  details               GatePassDetail[]
+
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+}
+
+model GatePassDetail {
+  id                    String      @id @default(cuid())
+  srNo                  Int?
+  itemCode              String?
+  description           String?
+  uom                   String?
+  quantity              Float?
+  remarks               String?
+
+  gatePassId            String?
+  gatePass              GatePass? @relation(fields: [gatePassId], references: [id])
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
