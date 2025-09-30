@@ -47,5 +47,6 @@ router.use("/employee", employRoutes);
 router.use("/asset-verification", assetVerificationRoutes);
 router.use("/verified-asset", verifiedAssetRoutes);
 router.use("/gate-pass", gatePassRoutes);
+router.use("/asset-transaction", assetTransactionRoutes);
 
 export default router;
