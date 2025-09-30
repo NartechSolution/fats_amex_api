@@ -1,0 +1,13 @@
+model AssetTransaction {
+    id                  String           @id @default(cuid())
+
+    transactionId       String?         @unique // Human readable ID
+    type                String?         // Validate "GatePass", "Physical Count"
+    name                String?
+    transactionDate     DateTime?
+
+    isActive          Boolean?         @default(true)
+    createdAt         DateTime?        @default(now())
+    updatedAt         DateTime?        @updatedAt
+
+}

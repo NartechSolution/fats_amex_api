@@ -19,3 +19,4 @@ const generateUniqueId = (prefix = "") => {
 
 export const generateUserId = () => generateUniqueId("USR");
 export const generateOrderId = () => generateUniqueId("ORD");
+export const generateTransactionId = () => generateUniqueId("TXN");
