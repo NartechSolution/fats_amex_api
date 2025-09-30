@@ -1,7 +1,8 @@
 import Joi from "joi";
+
+import { ASSET_TRANSACTION_TYPES } from "../constants/enums.js";
 import { generateTransactionId } from "../utils/generateUniqueId.js";
 
-const { ASSET_TRANSACTION_TYPES } = require("../constants/enums.js");
 const types = Object.values(ASSET_TRANSACTION_TYPES);
 
 const assetTransactionSchema = {
