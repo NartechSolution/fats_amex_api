@@ -62,9 +62,14 @@ const assetTransactionSchema = {
           "number.min": "Limit must be at least 1",
           "number.max": "Limit cannot exceed 100",
         }),
-      search: Joi.string().trim().optional().default("").messages({
-        "string.base": "Search must be a string",
-      }),
+      search: Joi.string()
+        .trim()
+        .optional()
+        .allow(null, "")
+        .default("")
+        .messages({
+          "string.base": "Search must be a string",
+        }),
       sortBy: Joi.string()
         .valid(
           "id",
