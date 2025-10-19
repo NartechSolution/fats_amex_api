@@ -22,3 +22,17 @@ export const inventoryTransactionSchema = Joi.object({
     .optional()
     .default(InventoryStatus.COMPLETED),
 });
+
+export const inventoryItemsSchema = Joi.object({
+  verifiedAssetsId: Joi.array()
+    .items(Joi.string().required())
+    .required()
+    .messages({
+      "any.required": "Verified Assets ID array is required",
+      "array.base": "Verified Assets ID must be an array of strings",
+    }), // ['itemId1', 'itemId2', ...]
+  inventoryId: Joi.string().required().messages({
+    "any.required": "Inventory ID is required",
+    "string.empty": "Inventory ID cannot be empty",
+  }),
+});
