@@ -13,3 +13,5 @@ assets
 
 # bat files
 *.bat
+
+.idea/

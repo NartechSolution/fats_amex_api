@@ -15,11 +15,9 @@ class SuperAdminController {
     try {
       // Validate request body
       const { error, value } = superAdminSchema.validate(req.body);
-      if (error) {
-        throw new MyError(error.details[0].message, 400);
-      }
+      if (error) throw new MyError(error.details[0].message, 400);
 
-      const { email, password } = value;
+        const { email, password } = value;
 
       // Verify credentials against env variables
       if (

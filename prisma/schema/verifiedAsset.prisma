@@ -48,6 +48,9 @@ model VerifiedAsset {
   journalRefNo                      String?
   images                            String?
 
+  inventoryId                       String?
+  inventory                         Inventory? @relation(fields: [inventoryId], references: [id])
+
   createdAt                         DateTime @default(now())
   updatedAt                         DateTime @updatedAt
 }

@@ -10,6 +10,7 @@
     "workers": "nodemon src/workers/index.js",
     "prisma:push": "npx prisma db push --schema=prisma/",
     "prisma:generate": "npx prisma generate --schema=prisma/",
+    "prisma:pull": "npx prisma db pull --schema=prisma/",
     "test": "jest",
     "seed": "node seed/index.js",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org gst-sz --project gst-api ./ && sentry-cli sourcemaps upload --org gst-sz --project gst-api ./"

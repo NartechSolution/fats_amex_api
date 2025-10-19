@@ -1,0 +1,11 @@
+model TblMAINSUBSeriesNo {
+  TblMAINSUBSeriesNoID Int      @default(autoincrement())
+  MainCategoryCode     String?  @db.VarChar(2)
+  SubCategoryCode      String?  @db.VarChar(4)
+  MainSubSeriesNo      Decimal? @db.Decimal(5, 0)
+  MainDescription      String?  @db.VarChar(150)
+  SubDescription       String?  @db.VarChar(150)
+  SeriesNumber         Decimal? @db.Decimal(10, 0)
+
+  @@ignore
+}

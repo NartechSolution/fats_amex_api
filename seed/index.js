@@ -1,3 +1,4 @@
+import seedInventory from "./inventory.js";
 import seedVerifiedAssets from "./verifiedAsset.js";
 
 async function main() {
@@ -6,6 +7,9 @@ async function main() {
   try {
     // Seed VerifiedAssets
     await seedVerifiedAssets();
+
+    // Seed Inventory
+    await seedInventory();
 
     console.log("🎉 All seeding completed successfully!");
   } catch (error) {
