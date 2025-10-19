@@ -1,22 +1,24 @@
 import Joi from "joi";
 
-const inventoryTypes = ["Asset", "Consumable"];
+import { InventoryScanningMode, InventoryStatus } from "../utils/app_enums.js";
 
-export const inventorySchema = Joi.object({
-  assetLocation: Joi.string(),
-  mainCatCode: Joi.string(),
-  mainCatDesc: Joi.string(),
-  mainDesc: Joi.string(),
-  subCatCode: Joi.string(),
-  subCatDesc: Joi.string(),
-  assetCategory: Joi.string(),
-  image: Joi.string().optional(),
-  quantity: Joi.number().integer().min(1).default(1),
-  serial: Joi.string().optional(),
-  type: Joi.string()
-    .valid(...inventoryTypes)
+const statuses = Object.values(InventoryStatus);
+const scanningModes = Object.values(InventoryScanningMode);
+
+export const inventoryTransactionSchema = Joi.object({
+  transactionId: Joi.string().optional(),
+  transactionDate: Joi.date().optional(),
+  transactionName: Joi.string().required().messages({
+    "any.required": "Transaction name is required",
+    "string.empty": "Transaction name cannot be empty",
+  }),
+  scanningMode: Joi.string()
+    .required()
+    .valid(...scanningModes)
     .optional(),
-  employeeId: Joi.string().optional(),
-  extNumber: Joi.string().optional(),
-  faNumber: Joi.string().optional(),
+  createdBy: Joi.string().optional().allow(null, ""),
+  status: Joi.string()
+    .valid(...statuses)
+    .optional()
+    .default(InventoryStatus.COMPLETED),
 });
