@@ -5,8 +5,18 @@ import { verifyAccessToken } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-// Create inventory transaction (no file upload needed)
+// Create inventory transaction
 router.post("/", verifyAccessToken, InventoryController.create);
+
+// Get all inventories with pagination
+router.get("/", verifyAccessToken, InventoryController.getAll);
+
+// Get verified assets by inventory ID
+router.get(
+  "/:id/verified-assets",
+  verifyAccessToken,
+  InventoryController.getVerifiedAssetsByInventoryId
+);
 
 // Add verified assets to inventory
 router.post(
