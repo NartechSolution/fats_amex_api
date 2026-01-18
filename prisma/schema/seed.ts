@@ -6,10 +6,9 @@ const prisma = new PrismaClient();
 
 // ============== ROLES DATA ==============
 const rolesData = [
-  { id: 'role-super-admin', name: 'super_admin', description: 'Super Administrator with full access to all features' },
-  { id: 'role-admin', name: 'admin', description: 'Administrator with access to manage users and assets' },
-  { id: 'role-member', name: 'member', description: 'Regular member with limited access' },
-  { id: 'role-viewer', name: 'viewer', description: 'Read-only access to view assets and reports' },
+  { id: 'role-admin', name: 'admin', description: 'Administrator with full access - navigates to /selection' },
+  { id: 'role-wbs', name: 'wbs', description: 'WBS user - navigates to /wbs/dashboard' },
+  { id: 'role-fats', name: 'fats', description: 'FATS user - navigates to /fats-amex/dashboard' },
 ];
 
 // ============== ROLES TYPE DATA ==============
@@ -22,28 +21,28 @@ const rolesTypeData = [
 // ============== USERS DATA ==============
 const usersData = [
   {
-    id: 'user-super-admin',
+    id: 'user-admin',
     email: 'abdulmajid1m2@gmail.com',
     password: '123123',
-    name: 'Abdul Majid (Super Admin)',
-    role: 'both',
-    roleIds: ['role-super-admin'],
-  },
-  {
-    id: 'user-member',
-    email: 'member@fats.com',
-    password: '123123',
-    name: 'Member User',
-    role: 'fats',
-    roleIds: ['role-member'],
-  },
-  {
-    id: 'user-admin',
-    email: 'admin@fats.com',
-    password: '123123',
-    name: 'Admin User',
-    role: 'both',
+    name: 'Abdul Majid (Admin)',
+    role: 'admin',
     roleIds: ['role-admin'],
+  },
+  {
+    id: 'user-wbs',
+    email: 'wbs@fats.com',
+    password: '123123',
+    name: 'WBS User',
+    role: 'wbs',
+    roleIds: ['role-wbs'],
+  },
+  {
+    id: 'user-fats',
+    email: 'fats@fats.com',
+    password: '123123',
+    name: 'FATS User',
+    role: 'fats',
+    roleIds: ['role-fats'],
   },
 ];
 
@@ -1004,9 +1003,9 @@ async function main() {
     console.log('══════════════════════════════════════════');
     console.log('\n🎉 Database seeding completed successfully!');
     console.log('\n📋 Login Credentials:');
-    console.log('   Super Admin: abdulmajid1m2@gmail.com / 123123');
-    console.log('   Member:      member@fats.com / 123123');
-    console.log('   Admin:       admin@fats.com / 123123');
+    console.log('   Admin (→ /selection):        abdulmajid1m2@gmail.com / 123123');
+    console.log('   WBS (→ /wbs/dashboard):      wbs@fats.com / 123123');
+    console.log('   FATS (→ /fats-amex/dashboard): fats@fats.com / 123123');
 
   } catch (error) {
     console.error('❌ Error during seeding:', error);
