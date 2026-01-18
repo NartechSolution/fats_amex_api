@@ -30,9 +30,10 @@ pipeline {
         stage('Manage PM2 and Install Dependencies') {
             steps {
                 script {
-                    echo "Stopping PM2 process if running..."
+                    echo "Checking PM2 processes..."
                     def processStatus = bat(script: 'pm2 list', returnStdout: true).trim()
                     if (processStatus.contains('fatsAmexAPI') || processStatus.contains('fats-workers')) {
+                        echo "Stopping existing PM2 processes..."
                         bat 'pm2 stop fatsAmexAPI fats-workers || exit 0'
                     }
                 }
@@ -40,9 +41,18 @@ pipeline {
                 bat 'npm install'
                 echo "Generating Prisma files..."
                 bat 'npx prisma generate'
-                echo "Restarting PM2 process..."
-                bat 'pm2 restart fatsAmexAPI'
-                echo "Restarting PM2 process... Done"
+                script {
+                    echo "Starting/Restarting PM2 process..."
+                    def processStatus = bat(script: 'pm2 list', returnStdout: true).trim()
+                    if (processStatus.contains('fatsAmexAPI')) {
+                        echo "Process exists, restarting..."
+                        bat 'pm2 restart fatsAmexAPI'
+                    } else {
+                        echo "Process does not exist, starting new..."
+                        bat 'pm2 start src/app.js --name fatsAmexAPI'
+                    }
+                }
+                echo "PM2 process started successfully"
                 bat 'pm2 save'
             }
         }
