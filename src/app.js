@@ -4,7 +4,6 @@ import express from "express";
 import path, { dirname } from "path";
 import swaggerUi from "swagger-ui-express";
 import { fileURLToPath } from "url";
-
 import config from "./config/config.js";
 import swaggerSpec from "./config/swagger.js";
 import cors from "./middlewares/cors.js";
