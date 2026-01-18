@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        ENV_FILE_PATH = "C:\\ProgramData\\Jenkins\\.jenkins\\jenkinsEnv\\fats-amex-api"
+        ENV_FILE_PATH = "C:\\Program Files\\Jenkins\\jenkinsEnv\\fats-amex-api"
         HOME = "C:\\ProgramData\\Jenkins\\.jenkins"
     }
 
@@ -13,7 +13,7 @@ pipeline {
                     branches: [[name: '*/main']], 
                     extensions: [], 
                     userRemoteConfigs: [[
-                        credentialsId: 'Wasim-Jenkins-Credentials', 
+                        credentialsId: 'dev_majid_new_github_credentials', 
                         url: 'https://github.com/NartechSolution/fats_amex_api.git'
                     ]]
                 )
