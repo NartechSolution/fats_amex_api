@@ -16,7 +16,7 @@
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org gst-sz --project gst-api ./ && sentry-cli sourcemaps upload --org gst-sz --project gst-api ./"
   },
   "prisma": {
-    "seed": "npx tsx prisma/schema/seed.ts"
+    "seed": "npx tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -41,7 +41,7 @@
     "fs-extra": "^11.2.0",
     "ioredis": "^5.4.1",
     "joi": "^17.13.3",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "^9.0.3",
     "multer": "^1.4.5-lts.1",
     "multermate": "^2.1.1",
     "multermate-es": "^1.0.1",
